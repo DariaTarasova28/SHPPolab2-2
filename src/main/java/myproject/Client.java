@@ -1,29 +1,25 @@
 package myproject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Client {
-    private static int idCounter = 0;
-    private final int clientId;
-    private final List<Drink> drinks = new ArrayList<>();
+    private static int clientCounter = 0;
+    private final String clientId;
 
+    // Конструктор с параметром
+    public Client(String clientId) {
+        this.clientId = clientId;
+    }
+
+    // Конструктор без параметров
     public Client() {
-        this.clientId = idCounter++;
+        this.clientId = "Client-" + (++clientCounter);
     }
 
-    public void addDrink(Drink drink) {
-        drinks.add(drink);
-        Order order = new Order(this, drink);
-        DrinkMachine.addOrder(order);
-    }
-
-    public int getClientId() {
+    public String getClientId() {
         return clientId;
     }
 
-    public List<Drink> getDrinks() {
-        return drinks;
+    public void addDrink(Drink drink) {
+        // Логика добавления напитка в корзину или иную структуру
     }
 }
 

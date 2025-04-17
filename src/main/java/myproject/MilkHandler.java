@@ -16,7 +16,7 @@ public class MilkHandler implements Handler{
 
     @Override
     public boolean handle(String string) {
-        if (string.substring(0, 1).equalsIgnoreCase("y")) {
+        if (string.substring(0, 1).equalsIgnoreCase("yes")) {
             return true;
         } else {
             return false;

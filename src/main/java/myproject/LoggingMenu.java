@@ -7,15 +7,17 @@ public class LoggingMenu {
         this.menu = menu;
     }
 
-    public Object choose() {
-        System.out.println("Menu.choose() called");
-        Object result = null;
+    public boolean choose(Client client) {
+        System.out.println("Menu.choose(client) called for Client #" + client.getClientId());
+        boolean result = false;
         try {
-            result = menu.choose();
-            System.out.println("Menu.choose() returned " + result);
-        } catch (Exception e) { // теперь ловим просто Exception (или вообще можно убрать try-catch, если не нужен)
-            System.out.println("Exception while calling choose: " + e.getMessage());
+            result = menu.choose(client);
+            System.out.println("Menu.choose(client) returned: " + result);
+        } catch (Exception e) {
+            System.out.println("Exception while calling choose(client): " + e.getMessage());
         }
         return result;
     }
 }
+
+

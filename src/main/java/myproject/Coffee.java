@@ -8,6 +8,11 @@ class Coffee implements Drink {
         this.manufacturer = manufacturer;
         this.price = price;
     }
+    @Override
+    public double getCost() {
+        return calculateCost();
+    }
+
 
     @Override
     public double calculateCost() {

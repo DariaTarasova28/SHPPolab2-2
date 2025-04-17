@@ -6,7 +6,7 @@ import java.util.Deque;
 public class DrinkMachine {
     private final int machineId;
     private static int idCounter = 0;
-    private static int queueMax = 10;
+    private static final int queueMax = 10;
     private static final Deque<Order> orders = new ArrayDeque<>();
 
     public DrinkMachine() {
@@ -16,32 +16,26 @@ public class DrinkMachine {
     public static void addOrder(Order order) {
         if (orders.size() < queueMax) {
             orders.addLast(order);
-            System.out.println("Order added to the queue: " + order.drink);
+            System.out.println("Order added to the queue: " + order.getDrink() + " for client #" + order.getClient().getClientId());
         } else {
             System.out.println("Queue is full. Order was not accepted.");
         }
     }
 
-    // Новый метод serveNext (вместо processNextOrder)
     public void serveNext() {
         if (!orders.isEmpty()) {
             Order order = orders.removeFirst();
-            System.out.println("Machine " + (machineId + 1) + ": " + order.drink + " was given to client #" + order.client.getClientId());
+            System.out.println("Machine " + (machineId + 1) + " is now preparing: " + order.getDrink() + " for client #" + order.getClient().getClientId());
+            // Симуляция времени на приготовление
+            try {
+                Thread.sleep(2000); // Симуляция времени, которое машина тратит на приготовление (2 секунды)
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Machine " + (machineId + 1) + ": " + order.getDrink() + " is ready and served to client #" + order.getClient().getClientId());
         } else {
             System.out.println("Machine " + (machineId + 1) + " found no orders to serve.");
         }
-    }
-
-    public int getMachineId() {
-        return machineId;
-    }
-
-    public static int getQueueMax() {
-        return queueMax;
-    }
-
-    public static void setQueueMax(int queueMax) {
-        DrinkMachine.queueMax = queueMax;
     }
 
     public static int getQueueSize() {
@@ -51,6 +45,20 @@ public class DrinkMachine {
     public static Deque<Order> getOrders() {
         return orders;
     }
+
+    public void serveAllOrders() {
+        System.out.println("\nStarting to process all orders...");
+        while (!orders.isEmpty()) {
+            serveNext();
+        }
+        System.out.println("\nAll orders have been processed.");
+    }
 }
+
+
+
+
+
+
 
 

@@ -6,10 +6,9 @@ import java.util.List;
 public class ShoppingCart {
     private final List<Drink> drinks = new ArrayList<>();
 
-    public Drink addDrink(DrinkFactory factory, String manufacturer) {
-        Drink drink = factory.getDrink(manufacturer);
+    // Метод addDrink теперь принимает только Drink, так как мы уже создаём Drink через фабрики в Menu
+    public void addDrink(Drink drink) {
         drinks.add(drink);
-        return drink;
     }
 
     public double calculateTotal() {
@@ -26,3 +25,4 @@ public class ShoppingCart {
         return drinks;
     }
 }
+

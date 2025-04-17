@@ -8,6 +8,11 @@ class DrinkWithSugar extends DrinkDecorator {
         super(drink);
         this.sugarAmount = sugarAmount;
     }
+    @Override
+    public double getCost() {
+        return calculateCost();
+    }
+
 
     @Override
     public double calculateCost() {

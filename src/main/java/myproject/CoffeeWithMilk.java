@@ -5,6 +5,11 @@ class CoffeeWithMilk extends DrinkDecorator {
         super(drink);
     }
     @Override
+    public double getCost() {
+        return calculateCost();
+    }
+
+    @Override
     public double calculateCost() {
         return drink.calculateCost() + 0.7; // Цена за добавление молока
     }

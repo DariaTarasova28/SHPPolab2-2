@@ -1,6 +1,5 @@
 package myproject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,14 +13,7 @@ public class Menu {
     List<DrinkFactory> factories = new ArrayList<>();
     List<String> selections = new ArrayList<>();
 
-    public static Menu getInstance() {
-        if (instance == null) {
-            instance = new Menu();
-        }
-        return instance;
-    }
-
-    public Menu() {
+    private Menu() {
         factories.add(new BlackTeaFactory());
         factories.add(new CoffeeWithMilkFactory());
         factories.add(new GreenTeaFactory());
@@ -29,8 +21,13 @@ public class Menu {
         selections.add("You've selected black tea. Please enter the manufacturer (Lipton or other):");
         selections.add("You've selected coffee. Please enter the manufacturer (Nescafe or other):");
         selections.add("You've selected green tea. Please enter the manufacturer (Lipton or other):");
+    }
 
-        instance = this;
+    public static Menu getInstance() {
+        if (instance == null) {
+            instance = new Menu();
+        }
+        return instance;
     }
 
     public void setCart(ShoppingCart cart) {
@@ -61,36 +58,66 @@ public class Menu {
         System.out.println("Total cost: $" + cart.calculateTotal());
     }
 
-    public boolean choose() {
-        String schoice = scanner.next();
-        if (!handler.handle(schoice)) {
-            return true;
+    public boolean choose(Client client) {
+        selectDrinks(client);
+        return false; // завершает цикл выбора напитков
+    }
+
+    public void selectDrinks(Client client) {
+        boolean keepSelecting = true;
+        while (keepSelecting) {
+            System.out.println("Please select your drinks (1 for black tea, 2 for coffee, 3 for green tea, 0 for exit):");
+            String schoice = scanner.next();
+            if (!handler.handle(schoice)) {
+                return;
+            }
+
+            int choice = Integer.parseInt(schoice);
+            if (choice == 0) {
+                keepSelecting = false;
+            } else {
+                DrinkFactory drinkFactory = factories.get(choice - 1);
+                System.out.println(selections.get(choice - 1));
+                String manufacturer = scanner.next();
+
+                Drink drink = drinkFactory.getDrink(manufacturer);
+
+                System.out.println("Add sugar? (yes/no)");
+                String sugarChoice = scanner.next().toLowerCase();
+
+                if (sugarChoice.equals("yes")) {
+                    System.out.println("How many sugars (0-3)?");
+                    int sugars = -1;
+                    while (sugars < 0 || sugars > 3) {
+                        if (scanner.hasNextInt()) {
+                            sugars = scanner.nextInt();
+                            if (sugars >= 0 && sugars <= 3) {
+                                break;
+                            } else {
+                                System.out.println("Please enter a number between 0 and 3.");
+                            }
+                        } else {
+                            System.out.println("Invalid input. Please enter a number between 0 and 3.");
+                            scanner.next();
+                        }
+                    }
+
+                    drink = new DrinkWithSugar(drink, sugars);
+                } else if (sugarChoice.equals("no")) {
+                    System.out.println("No sugar added.");
+                } else {
+                    System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+                    continue;
+                }
+
+                cart.addDrink(drink);
+                client.addDrink(drink);
+
+                System.out.println("Drink added to your cart.");
+                System.out.println("Total cost: $" + drink.getCost());
+            }
         }
-
-        int choice = Integer.parseInt(schoice);
-        if (choice == 0)
-            return false;
-
-        DrinkFactory drinkFactory = factories.get(choice - 1);
-        System.out.println(selections.get(choice - 1));
-        String manufacturer = scanner.next();
-
-        // Создаем напиток
-        Drink drink = drinkFactory.getDrink(manufacturer);
-
-        // Добавляем сахар
-        System.out.println("Add sugar? (y/n)");
-        if (scanner.next().equalsIgnoreCase("y")) {
-            System.out.println("How many sugars (0-3)?");
-            int sugars = scanner.nextInt();
-            drink = new DrinkWithSugar(drink, sugars);
-        }
-
-        // Добавляем в корзину и клиенту
-        cart.getDrinks().add(drink);
-        Main.user.addDrink(drink);
-
-        return true;
+        System.out.println("All drinks selected. Proceeding to payment...");
     }
 
     public PaymentStrategy choosePayment() {
@@ -100,7 +127,7 @@ public class Menu {
 
         if (handler.handle(pchoice)) {
             int choice = Integer.parseInt(pchoice);
-            scanner.nextLine(); // Очистка ввода после next()
+            scanner.nextLine(); // clear buffer
 
             if (choice == 1) {
                 System.out.print("Enter credit card number: ");
@@ -116,3 +143,7 @@ public class Menu {
         return new SoulPaymentStrategy();
     }
 }
+
+
+
+

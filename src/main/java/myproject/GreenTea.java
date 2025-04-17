@@ -8,6 +8,11 @@ public class GreenTea implements Drink {
         this.price = price;
     }
     @Override
+    public double getCost() {
+        return calculateCost();
+    }
+
+    @Override
     public double calculateCost() {
         // Цена за зеленый чай
         if (manufacturer.equalsIgnoreCase("Lipton")) {
