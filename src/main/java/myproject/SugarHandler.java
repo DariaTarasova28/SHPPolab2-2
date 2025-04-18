@@ -1,3 +1,4 @@
+// SugarHandler.java
 package myproject;
 
 import java.util.Scanner;
@@ -17,18 +18,15 @@ public class SugarHandler implements Handler {
 
     @Override
     public boolean handle(String input) {
-        System.out.println("How many sugars? (0-3):");
-        try {
-            int sugarAmount = Integer.parseInt(scanner.nextLine());
-            if (sugarAmount >= 0 && sugarAmount <= 3) {
-                return true; // Передаем управление следующему обработчику, если нужно
+        while (true) {
+            System.out.println("How many sugars (0-3)?");
+            String sugarInput = scanner.nextLine();
+
+            if (next != null && next.handle(sugarInput)) {
+                return true;
             } else {
-                System.out.println("Invalid sugar amount. Using default (0).");
-                return false;
+                System.out.println("Please enter a valid number between 0 and 3.");
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Using default (0).");
-            return false;
         }
     }
 }

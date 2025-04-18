@@ -1,13 +1,15 @@
+// IntHandler.java
 package myproject;
 
 public class IntHandler implements Handler {
-    Handler next;
-    IntHandler(Handler handler){
-        this.next = handler;
-    }
+    private Handler next;
 
     public IntHandler() {
-        next = null;
+        this.next = null;
+    }
+
+    public IntHandler(Handler next) {
+        this.next = next;
     }
 
     @Override
@@ -16,18 +18,22 @@ public class IntHandler implements Handler {
     }
 
     @Override
-    public boolean handle(String string) {
+    public boolean handle(String input) {
         try {
-            int result = Integer.parseInt(string);
-            if (result > -1 && result < 4){
-                System.out.print("Chain passed!");
+            int result = Integer.parseInt(input);
+            if (result >= 0 && result <= 3) {
+                System.out.println("Input validated: " + result);
+                if (next != null) return next.handle(input);
                 return true;
+            } else {
+                System.out.println("Number must be between 0 and 3.");
+                return false;
             }
-            else throw new IllegalArgumentException("Answer must be between 0 and 3");
-        }
-        catch (Exception exception){
-            System.out.println(exception.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format.");
             return false;
         }
     }
 }
+
+

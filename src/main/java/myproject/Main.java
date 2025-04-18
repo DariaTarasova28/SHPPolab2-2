@@ -8,16 +8,17 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         List<Client> clients = new ArrayList<>();
-        DrinkMachine machine = new DrinkMachine();
+        DrinkMachine machine = new DrinkMachine();  // Один автомат
         ShoppingCart cart = new ShoppingCart();
 
         Menu menu = Menu.getInstance();
         menu.setScanner(scanner);
         menu.setCart(cart);
 
-        // Включаем логирование
+        // Включаем логирование через Proxy
         LoggingMenu loggingMenu = new LoggingMenu(menu);
 
+        // Устанавливаем обработчик ввода
         menu.setHandler(new Handler() {
             private Handler next;
 
@@ -42,24 +43,20 @@ public class Main {
 
         System.out.println("How many clients do you want to create?");
         int numberOfClients = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine(); // Очищаем буфер
+
         for (int i = 0; i < numberOfClients; i++) {
             System.out.println("\nCreating client #" + (i + 1) + "...");
             Client client = new Client("Client-" + (i + 1));
             clients.add(client);
 
-            // УДАЛЕНО: menu.advise();
-
-            boolean continueChoosing = true;
-            while (continueChoosing) {
-                continueChoosing = loggingMenu.choose(client);
-            }
+            loggingMenu.choose(client); // логирование выбора напитков
 
             menu.printTotalCost();
 
             try {
-                PaymentStrategy strategy = menu.choosePayment();
-                menu.pay(strategy);
+                PaymentStrategy strategy = menu.choosePayment(); // уже с прокси
+                menu.pay(strategy); // корзина оплатит и очистится
             } catch (Exception e) {
                 System.out.println("Payment failed: " + e.getMessage());
             }
@@ -68,10 +65,9 @@ public class Main {
         }
 
 
+
         System.out.println("\nProcessing all orders:");
-        while (DrinkMachine.getQueueSize() > 0) {
-            machine.serveNext();
-        }
+        machine.serveAllOrders();  // Теперь логично, раз машина одна
 
         System.out.println("\nAll orders processed.");
     }

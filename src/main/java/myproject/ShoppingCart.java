@@ -21,15 +21,15 @@ public class ShoppingCart {
         double total = calculateTotal();
         System.out.println("Using payment method: " + strategy.getPaymentDetails());
         strategy.pay(total);
-        clearCart(); // ✅ очищаем корзину после оплаты
+        clearCart();
     }
 
-    // Получить список напитков
+
     public List<Drink> getDrinks() {
         return drinks;
     }
 
-    // ✅ Метод для очистки корзины
+
     public void clearCart() {
         drinks.clear();
     }
