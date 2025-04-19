@@ -58,8 +58,8 @@ public class Main {
             menu.printTotalCost();
 
             try {
-                PaymentStrategy strategy = menu.choosePayment();
-                menu.pay(strategy);
+                PaymentStrategyProxy ps = menu.choosePayment();
+                menu.pay(ps);
             } catch (Exception e) {
                 System.out.println("Payment failed: " + e.getMessage());
             }

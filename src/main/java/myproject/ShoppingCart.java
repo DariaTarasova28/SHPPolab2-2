@@ -15,7 +15,7 @@ public class ShoppingCart {
         return drinks.stream().mapToDouble(Drink::calculateCost).sum();
     }
 
-    public void pay(PaymentStrategy strategy) {
+    public void pay(PaymentStrategyProxy strategy) {
         double total = calculateTotal();
         System.out.println("Using payment method: " + strategy.getPaymentDetails());
         strategy.pay(total);

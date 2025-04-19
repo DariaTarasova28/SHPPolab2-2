@@ -46,7 +46,7 @@ public class Menu {
         System.out.println("Welcome to the drink menu!");
     }
 
-    public void pay(PaymentStrategy ps) {
+    public void pay(PaymentStrategyProxy ps) {
         cart.pay(ps);
     }
 
@@ -120,10 +120,15 @@ public class Menu {
         System.out.println("All drinks selected. Proceeding to payment...");
     }
 
-    public PaymentStrategy choosePayment() {
+    public PaymentStrategyProxy choosePayment() {
         System.out.println("Select your payment method:\n1. Credit Card\n2. Debit Card\nOther input means you are giving away your soul!");
         String pchoice = scanner.next();
         handler.setNext(null);
+
+        // Объявим переменные, чтобы потом собрать список стратегий
+        CreditCardStrategy creditCardStrategy = null;
+        DebitCardStrategy debitCardStrategy = null;
+        SoulPaymentStrategy soulPaymentStrategy = new SoulPaymentStrategy();
 
         if (handler.handle(pchoice)) {
             int choice = Integer.parseInt(pchoice);
@@ -132,16 +137,35 @@ public class Menu {
             if (choice == 1) {
                 System.out.print("Enter credit card number: ");
                 String number = scanner.nextLine();
-                return new CreditCardStrategy(number);
+                creditCardStrategy = new CreditCardStrategy(number);
             } else if (choice == 2) {
                 System.out.print("Enter debit card number: ");
                 String number = scanner.nextLine();
-                return new DebitCardStrategy(number);
+                debitCardStrategy = new DebitCardStrategy(number);
             }
         }
 
-        return new SoulPaymentStrategy();
+        // Сбор всех возможных стратегий
+        List<PaymentStrategy> allStrategies = new ArrayList<>();
+        if (creditCardStrategy != null) {
+            allStrategies.add(creditCardStrategy);
+            allStrategies.add(new DebitCardStrategy("default-debit"));
+            allStrategies.add(soulPaymentStrategy);
+            return new PaymentStrategyProxy(creditCardStrategy, allStrategies);
+        } else if (debitCardStrategy != null) {
+            allStrategies.add(new CreditCardStrategy("default-credit"));
+            allStrategies.add(debitCardStrategy);
+            allStrategies.add(soulPaymentStrategy);
+            return new PaymentStrategyProxy(debitCardStrategy, allStrategies);
+        } else {
+            allStrategies.add(new CreditCardStrategy("default-credit"));
+            allStrategies.add(new DebitCardStrategy("default-debit"));
+            allStrategies.add(soulPaymentStrategy);
+            return new PaymentStrategyProxy(soulPaymentStrategy, allStrategies);
+        }
     }
+
+
 }
 
 
