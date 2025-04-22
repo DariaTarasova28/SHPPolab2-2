@@ -67,70 +67,49 @@ public class Menu {
         boolean keepSelecting = true;
         while (keepSelecting) {
             System.out.println("Please select your drinks (1 for black tea, 2 for coffee, 3 for green tea, 0 for exit):");
-            String schoice = scanner.next();
-            if (!handler.handle(schoice)) {
-                return;
-            }
+            String schoice = scanner.next(); // Выбираем напиток по строке
 
             int choice = Integer.parseInt(schoice);
             if (choice == 0) {
-                keepSelecting = false;
+                keepSelecting = false; // Выход
             } else {
+                // Создаем напиток через фабрику
                 DrinkFactory drinkFactory = factories.get(choice - 1);
                 System.out.println(selections.get(choice - 1));
                 String manufacturer = scanner.next();
-
                 Drink drink = drinkFactory.getDrink(manufacturer);
 
-                System.out.println("Add sugar? (yes/no)");
-                String sugarChoice = scanner.next().toLowerCase();
+                // Создаем цепочку обязанностей для добавок
+                Handler sugarHandler = new SugarHandler();
+                Handler milkHandler = new MilkHandler();
+                sugarHandler.setNext(milkHandler); // Устанавливаем следующего обработчика
 
-                if (sugarChoice.equals("yes")) {
-                    System.out.println("How many sugars (0-3)?");
-                    int sugars = -1;
-                    while (sugars < 0 || sugars > 3) {
-                        if (scanner.hasNextInt()) {
-                            sugars = scanner.nextInt();
-                            if (sugars >= 0 && sugars <= 3) {
-                                break;
-                            } else {
-                                System.out.println("Please enter a number between 0 and 3.");
-                            }
-                        } else {
-                            System.out.println("Invalid input. Please enter a number between 0 and 3.");
-                            scanner.next();
-                        }
-                    }
-
-                    drink = new DrinkWithSugar(drink, sugars);
-                } else if (sugarChoice.equals("no")) {
-                    System.out.println("No sugar added.");
-                } else {
-                    System.out.println("Invalid input. Please enter 'yes' or 'no'.");
-                    continue;
+                // Обрабатываем добавки с использованием цепочки
+                if (sugarHandler.handle(drink, scanner)) {
+                    cart.addDrink(drink); // Добавляем напиток в корзину
+                    client.addDrink(drink); // Добавляем напиток клиенту
+                    System.out.println("Drink added to your cart.");
+                    System.out.println("Total cost: $" + drink.getCost());
                 }
-
-                cart.addDrink(drink);
-                client.addDrink(drink);
-
-                System.out.println("Drink added to your cart.");
-                System.out.println("Total cost: $" + drink.getCost());
             }
         }
         System.out.println("All drinks selected. Proceeding to payment...");
     }
 
+
+
     public PaymentStrategyProxy choosePayment() {
         System.out.println("Select your payment method:\n1. Credit Card\n2. Debit Card\nOther input means you are giving away your soul!");
         String pchoice = scanner.next();
-        handler.setNext(null);
+        handler.setNext(null); // Завершаем цепочку обязанностей, если она не используется
 
-        // Объявим переменные, чтобы потом собрать список стратегий
+        // Объявляем переменные для стратегии оплаты
         CreditCardStrategy creditCardStrategy = null;
         DebitCardStrategy debitCardStrategy = null;
         SoulPaymentStrategy soulPaymentStrategy = new SoulPaymentStrategy();
 
-        if (handler.handle(pchoice)) {
+        // Проверяем, является ли выбор допустимым
+        if (pchoice.equals("1") || pchoice.equals("2")) {
             int choice = Integer.parseInt(pchoice);
             scanner.nextLine(); // clear buffer
 
@@ -143,9 +122,11 @@ public class Menu {
                 String number = scanner.nextLine();
                 debitCardStrategy = new DebitCardStrategy(number);
             }
+        } else {
+            System.out.println("Invalid payment method. Proceeding with soul payment...");
         }
 
-        // Сбор всех возможных стратегий
+        // Собираем все возможные стратегии
         List<PaymentStrategy> allStrategies = new ArrayList<>();
         if (creditCardStrategy != null) {
             allStrategies.add(creditCardStrategy);
@@ -164,6 +145,7 @@ public class Menu {
             return new PaymentStrategyProxy(soulPaymentStrategy, allStrategies);
         }
     }
+
 
 
 }
