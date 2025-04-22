@@ -18,9 +18,6 @@ public class Client {
         return clientId;
     }
 
-    public void addDrink(Drink drink) {
-        // Логика добавления напитка в корзину или иную структуру
-    }
 }
 
 
