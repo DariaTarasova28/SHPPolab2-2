@@ -1,23 +1,30 @@
 package myproject;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 public class Client {
-    private static int clientCounter = 0;
     private final String clientId;
+    private final List<Drink> drinks;
 
-    // Конструктор с параметром
     public Client(String clientId) {
         this.clientId = clientId;
+        this.drinks = new ArrayList<>();
     }
 
-    // Конструктор без параметров
-    public Client() {
-        this.clientId = "Client-" + (++clientCounter);
+    // Новый метод для добавления напитка в список клиента
+    public void addDrink(Drink drink) {
+        drinks.add(drink);
+    }
+
+    // Получить все напитки клиента
+    public List<Drink> getDrinks() {
+        return drinks;
     }
 
     public String getClientId() {
         return clientId;
     }
-
 }
+
 
 

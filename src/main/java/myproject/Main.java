@@ -58,7 +58,8 @@ public class Main {
             Client client = new Client("Client-" + (i + 1));
             clients.add(client);
 
-            // УДАЛЕНО: menu.advise();
+            ShoppingCart clientCart = new ShoppingCart();
+            menu.setCart(clientCart); //
 
             boolean continueChoosing = true;
             while (continueChoosing) {
@@ -69,7 +70,7 @@ public class Main {
 
             try {
                 PaymentStrategyProxy ps = menu.choosePayment();
-                menu.pay(ps);
+                menu.pay(ps); // платим только за содержимое этой корзины
             } catch (Exception e) {
                 System.out.println("Payment failed: " + e.getMessage());
             }
