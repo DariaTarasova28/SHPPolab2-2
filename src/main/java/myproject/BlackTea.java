@@ -19,7 +19,7 @@ public class BlackTea implements Drink {
 
     @Override
     public double getCost() {
-        return calculateCost(); // реализация getCost
+        return calculateCost();
     }
 
     @Override

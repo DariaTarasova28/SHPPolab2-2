@@ -1,7 +1,7 @@
 package myproject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 public class Client {
     private final String clientId;
     private final List<Drink> drinks;

@@ -6,7 +6,7 @@ import java.util.List;
 public class ShoppingCart {
     private final List<Drink> drinks = new ArrayList<>();
 
-    // Метод addDrink теперь принимает только Drink, так как мы уже создаём Drink через фабрики в Menu
+
     public void addDrink(Drink drink) {
         drinks.add(drink);
     }
@@ -21,8 +21,6 @@ public class ShoppingCart {
         strategy.pay(total);
     }
 
-    public List<Drink> getDrinks() {
-        return drinks;
-    }
+
 }
 

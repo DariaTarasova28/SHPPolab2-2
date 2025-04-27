@@ -96,57 +96,40 @@ public class Menu {
         System.out.println("All drinks selected. Proceeding to payment...");
     }
 
-
-
     public PaymentStrategyProxy choosePayment() {
-        System.out.println("Select your payment method:\n1. Credit Card\n2. Debit Card\nOther input means you are giving away your soul!");
+
+        List<PaymentStrategy> availableStrategies = new ArrayList<>();
+        availableStrategies.add(new CreditCardStrategy());
+        availableStrategies.add(new DebitCardStrategy());
+        availableStrategies.add(new SoulPaymentStrategy());
+
+        System.out.println("Select your payment method:");
+        System.out.println("1. Credit Card");
+        System.out.println("2. Debit Card");
+        System.out.println("Other input - payment with your soul");
+
         String pchoice = scanner.next();
-        handler.setNext(null); // Завершаем цепочку обязанностей, если она не используется
+        handler.setNext(null); // Завершаем цепочку обязанностей
 
-        // Объявляем переменные для стратегии оплаты
-        CreditCardStrategy creditCardStrategy = null;
-        DebitCardStrategy debitCardStrategy = null;
-        SoulPaymentStrategy soulPaymentStrategy = new SoulPaymentStrategy();
+        PaymentStrategy selectedStrategy;
+        int choice;
 
-        // Проверяем, является ли выбор допустимым
-        if (pchoice.equals("1") || pchoice.equals("2")) {
-            int choice = Integer.parseInt(pchoice);
-            scanner.nextLine(); // clear buffer
-
-            if (choice == 1) {
-                System.out.print("Enter credit card number: ");
-                String number = scanner.nextLine();
-                creditCardStrategy = new CreditCardStrategy(number);
-            } else if (choice == 2) {
-                System.out.print("Enter debit card number: ");
-                String number = scanner.nextLine();
-                debitCardStrategy = new DebitCardStrategy(number);
+        try {
+            choice = Integer.parseInt(pchoice);
+            if (choice == 1 || choice == 2) {
+                selectedStrategy = availableStrategies.get(choice - 1);
+                scanner.nextLine(); // Очищаем буфер
+                selectedStrategy.init(scanner);
+            } else {
+                throw new NumberFormatException();
             }
-        } else {
+        } catch (NumberFormatException e) {
             System.out.println("Invalid payment method. Proceeding with soul payment...");
+            selectedStrategy = availableStrategies.get(2); // SoulPaymentStrategy
         }
 
-        // Собираем все возможные стратегии
-        List<PaymentStrategy> allStrategies = new ArrayList<>();
-        if (creditCardStrategy != null) {
-            allStrategies.add(creditCardStrategy);
-            allStrategies.add(new DebitCardStrategy("default-debit"));
-            allStrategies.add(soulPaymentStrategy);
-            return new PaymentStrategyProxy(creditCardStrategy, allStrategies);
-        } else if (debitCardStrategy != null) {
-            allStrategies.add(new CreditCardStrategy("default-credit"));
-            allStrategies.add(debitCardStrategy);
-            allStrategies.add(soulPaymentStrategy);
-            return new PaymentStrategyProxy(debitCardStrategy, allStrategies);
-        } else {
-            allStrategies.add(new CreditCardStrategy("default-credit"));
-            allStrategies.add(new DebitCardStrategy("default-debit"));
-            allStrategies.add(soulPaymentStrategy);
-            return new PaymentStrategyProxy(soulPaymentStrategy, allStrategies);
-        }
+        return new PaymentStrategyProxy(selectedStrategy, availableStrategies, scanner);
     }
-
-
 
 }
 

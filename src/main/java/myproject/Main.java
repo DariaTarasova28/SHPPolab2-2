@@ -30,14 +30,14 @@ public class Main {
                 try {
                     int choice = Integer.parseInt(input);
                     if (choice >= 0 && choice <= 3) {
-                        return true;  // Правильный выбор
+                        return true;
                     } else {
                         System.out.println("Invalid choice, please try again.");
-                        return false;  // Неверный выбор
+                        return false;
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a number between 0 and 3.");
-                    return false;  // Неверный ввод
+                    return false;
                 }
             }
 

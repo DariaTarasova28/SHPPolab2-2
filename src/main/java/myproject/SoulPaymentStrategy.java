@@ -1,6 +1,23 @@
 package myproject;
 
+import java.time.LocalTime;
+import java.util.Optional;
+import java.util.Scanner;
+
 public class SoulPaymentStrategy implements PaymentStrategy {
+    @Override
+    public void init(Scanner scanner) {
+        // Не требует ввода данных
+    }
+
+    @Override
+    public Optional<String> canPay(double amount) {
+        LocalTime now = LocalTime.now();
+        if (now.isAfter(LocalTime.of(22, 0)) || now.isBefore(LocalTime.of(6, 0))) {
+            return Optional.of("Soul payment unavailable (22:00-06:00)");
+        }
+        return Optional.empty();
+    }
 
     @Override
     public String getPaymentDetails() {

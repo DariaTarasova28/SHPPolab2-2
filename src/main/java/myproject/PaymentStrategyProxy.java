@@ -1,74 +1,64 @@
 package myproject;
 
-import java.time.LocalTime;
-
-import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class PaymentStrategyProxy implements PaymentStrategy {
-    private PaymentStrategy realStrategy;
+    private PaymentStrategy currentStrategy;
     private final List<PaymentStrategy> availableStrategies;
+    private final Scanner scanner;
 
-    public PaymentStrategyProxy(PaymentStrategy realStrategy, List<PaymentStrategy> allStrategies) {
-        this.realStrategy = realStrategy;
-        this.availableStrategies = allStrategies;
-    }
-
-    @Override
-    public String getPaymentDetails() {
-        System.out.println("[LOG] Получение информации об оплате: " + realStrategy.getClass().getSimpleName());
-        return realStrategy.getPaymentDetails();
+    public PaymentStrategyProxy(PaymentStrategy initialStrategy,
+                                List<PaymentStrategy> availableStrategies,
+                                Scanner scanner) {
+        this.currentStrategy = initialStrategy;
+        this.availableStrategies = availableStrategies;
+        this.scanner = scanner;
     }
 
     @Override
     public void pay(double amount) {
-        if (tryPay(realStrategy, amount)) {
-            return;
-        }
-
-        // Если оплата не прошла — предложим альтернативу
-        System.out.println("\n[INFO] Выберите другой способ оплаты: ");
-        for (int i = 0; i < availableStrategies.size(); i++) {
-            PaymentStrategy strategy = availableStrategies.get(i);
-            if (!strategy.getClass().equals(realStrategy.getClass())) {
-                System.out.println((i + 1) + ". " + strategy.getClass().getSimpleName());
-            }
-        }
-
-        Scanner scanner = new Scanner(System.in);
-        int choice = scanner.nextInt();
-        if (choice >= 1 && choice <= availableStrategies.size()) {
-            PaymentStrategy newStrategy = availableStrategies.get(choice - 1);
-            System.out.println("[LOG] Вы выбрали новый способ оплаты: " + newStrategy.getClass().getSimpleName());
-            new PaymentStrategyProxy(newStrategy, availableStrategies).pay(amount);
+        Optional<String> failureReason = currentStrategy.canPay(amount);
+        if (failureReason.isEmpty()) {
+            currentStrategy.pay(amount);
         } else {
-            System.out.println("[BUG] Неверный выбор. Оплата отменена.");
+            System.out.println("[FAILED] " + failureReason.get());
+            switchToAlternative(amount);
         }
     }
 
-    private boolean tryPay(PaymentStrategy strategy, double amount) {
-        System.out.println("[LOG] Попытка оплаты: " + amount + " с использованием " + strategy.getClass().getSimpleName());
-
-        if (strategy instanceof SoulPaymentStrategy) {
-            LocalTime now = LocalTime.now();
-            if (now.isAfter(LocalTime.of(22, 0)) || now.isBefore(LocalTime.of(6, 0))) {
-                System.out.println("[ОТКАЗ] Оплата душой недоступна в ночное время (22:00–06:00).");
-                return false;
-            }
+    private void switchToAlternative(double amount) {
+        System.out.println("\nSelect alternative payment method:");
+        for (int i = 0; i < availableStrategies.size(); i++) {
+            System.out.println((i + 1) + ". " +
+                    availableStrategies.get(i).getClass().getSimpleName());
         }
 
-        if (strategy instanceof DebitCardStrategy && amount > 5) {
-            System.out.println("[ОТКАЗ] Превышен лимит по дебетовой карте: максимум 5.");
-            return false;
-        }
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Очистка буфера
 
-        if (strategy instanceof CreditCardStrategy && amount > 10) {
-            System.out.println("[WARNING] Оплата кредитной картой более 10. Проверьте безопасность оплаты.");
+        if (choice >= 1 && choice <= availableStrategies.size()) {
+            PaymentStrategy newStrategy = availableStrategies.get(choice - 1);
+            newStrategy.init(scanner);
+            new PaymentStrategyProxy(newStrategy, availableStrategies, scanner).pay(amount);
+        } else {
+            System.out.println("Invalid choice. Payment canceled.");
         }
+    }
 
-        // Успешная оплата
-        strategy.pay(amount);
-        return true;
+    @Override
+    public Optional<String> canPay(double amount) {
+        return currentStrategy.canPay(amount);
+    }
+
+    @Override
+    public String getPaymentDetails() {
+        return currentStrategy.getPaymentDetails();
+    }
+
+    @Override
+    public void init(Scanner scanner) {
+        // Прокси не требует дополнительной инициализации
     }
 }
