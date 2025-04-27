@@ -22,7 +22,7 @@ public class Main {
             private Handler next;
 
             @Override
-            public boolean handle(Drink drink, Scanner scanner) {
+            public Drink handle(Drink drink, Scanner scanner) {
                 // Пример обработки выбора напитка
                 System.out.println("Please select a drink (1 for black tea, 2 for coffee, 3 for green tea):");
                 String input = scanner.next();
@@ -30,14 +30,14 @@ public class Main {
                 try {
                     int choice = Integer.parseInt(input);
                     if (choice >= 0 && choice <= 3) {
-                        return true;
+                        return drink;
                     } else {
                         System.out.println("Invalid choice, please try again.");
-                        return false;
+                        return drink;
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid input. Please enter a number between 0 and 3.");
-                    return false;
+                    return drink;
                 }
             }
 

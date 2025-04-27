@@ -1,5 +1,4 @@
 package myproject;
-
 import java.util.Scanner;
 
 public class SugarHandler implements Handler {
@@ -11,7 +10,7 @@ public class SugarHandler implements Handler {
     }
 
     @Override
-    public boolean handle(Drink drink, Scanner scanner) {
+    public Drink handle(Drink drink, Scanner scanner) {
         System.out.println("Add sugar? (yes/no):");
         String sugarChoice = scanner.next().toLowerCase();
 
@@ -21,24 +20,16 @@ public class SugarHandler implements Handler {
             while (sugars < 0 || sugars > 3) {
                 if (scanner.hasNextInt()) {
                     sugars = scanner.nextInt();
-                    if (sugars >= 0 && sugars <= 3) {
-                        break;
-                    } else {
-                        System.out.println("Please enter a number between 0 and 3.");
-                    }
-                } else {
-                    System.out.println("Invalid input. Please enter a number between 0 and 3.");
-                    scanner.next(); // clear invalid input
                 }
+                scanner.nextLine(); // Очищаем буфер
             }
-            drink = new DrinkWithSugar(drink, sugars);
-        } else {
-            System.out.println("No sugar added.");
+            drink = new DrinkWithSugar(drink, sugars); // Применяем декоратор
+            System.out.println(sugars + " sugar(s) added");
         }
 
         if (next != null) {
             return next.handle(drink, scanner);
         }
-        return true;
+        return drink; // Возвращаем модифицированный напиток
     }
 }

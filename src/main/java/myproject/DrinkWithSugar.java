@@ -1,22 +1,21 @@
 package myproject;
 
-// Декоратор для добавления сахара
 class DrinkWithSugar extends DrinkDecorator {
-    private final int sugarAmount; // Количество ложек сахара
+    private final int sugarAmount;
 
     public DrinkWithSugar(Drink drink, int sugarAmount) {
         super(drink);
         this.sugarAmount = sugarAmount;
     }
+
     @Override
     public double getCost() {
-        return calculateCost();
+        return drink.getCost() + (0.2 * sugarAmount); // Добавляем стоимость сахара
     }
-
 
     @Override
     public double calculateCost() {
-        return drink.calculateCost() + (0.2 * sugarAmount); // Цена за ложку сахара — 0.2$
+        return drink.calculateCost() + (0.2 * sugarAmount);
     }
 
     @Override

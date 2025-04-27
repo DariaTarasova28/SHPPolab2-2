@@ -15,7 +15,7 @@ public class Menu {
 
     private Menu() {
         factories.add(new BlackTeaFactory());
-        factories.add(new CoffeeWithMilkFactory());
+        factories.add(new CoffeeFactory());
         factories.add(new GreenTeaFactory());
 
         selections.add("You've selected black tea. Please enter the manufacturer (Lipton or other):");
@@ -67,30 +67,34 @@ public class Menu {
         boolean keepSelecting = true;
         while (keepSelecting) {
             System.out.println("Please select your drinks (1 for black tea, 2 for coffee, 3 for green tea, 0 for exit):");
-            String schoice = scanner.next(); // Выбираем напиток по строке
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Очищаем буфер
 
-            int choice = Integer.parseInt(schoice);
             if (choice == 0) {
-                keepSelecting = false; // Выход
-            } else {
-                // Создаем напиток через фабрику
+                keepSelecting = false;
+            } else if (choice >= 1 && choice <= 3) {
                 DrinkFactory drinkFactory = factories.get(choice - 1);
                 System.out.println(selections.get(choice - 1));
-                String manufacturer = scanner.next();
+                String manufacturer = scanner.nextLine();
+
+                // Создаем базовый напиток
                 Drink drink = drinkFactory.getDrink(manufacturer);
+                double baseCost = drink.getCost();
 
-                // Создаем цепочку обязанностей для добавок
-                Handler sugarHandler = new SugarHandler();
+                // Обрабатываем добавки
                 Handler milkHandler = new MilkHandler();
-                sugarHandler.setNext(milkHandler); // Устанавливаем следующего обработчика
+                Handler sugarHandler = new SugarHandler();
+                milkHandler.setNext(sugarHandler);
 
-                // Обрабатываем добавки с использованием цепочки
-                if (sugarHandler.handle(drink, scanner)) {
-                    cart.addDrink(drink); // Добавляем напиток в корзину
-                    client.addDrink(drink); // Добавляем напиток клиенту
-                    System.out.println("Drink added to your cart.");
-                    System.out.println("Total cost: $" + drink.getCost());
-                }
+                // Получаем напиток со всеми добавками
+                drink = milkHandler.handle(drink, scanner);
+
+                cart.addDrink(drink);
+                client.addDrink(drink);
+                System.out.println("Drink added to your cart.");
+                System.out.println("Current cost of this drink: $" + drink.getCost());
+                System.out.println("Total cost so far: $" + cart.calculateTotal());
+                
             }
         }
         System.out.println("All drinks selected. Proceeding to payment...");

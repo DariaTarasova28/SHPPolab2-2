@@ -1,5 +1,6 @@
 package myproject;
 import java.util.Scanner;
+
 public class MilkHandler implements Handler {
     private Handler next;
 
@@ -9,26 +10,20 @@ public class MilkHandler implements Handler {
     }
 
     @Override
-    public boolean handle(Drink drink, Scanner scanner) {
-        if (drink instanceof Coffee) { // Молоко только для кофе
+    public Drink handle(Drink drink, Scanner scanner) {
+        if (drink instanceof Coffee) {
             System.out.println("Add milk? (yes/no):");
             String milkChoice = scanner.next().toLowerCase();
 
             if ("yes".equals(milkChoice)) {
-                // Обновляем объект drink, добавляя молоко
-                drink = new CoffeeWithMilk(drink);  // Создаем новый объект с молоком
-                System.out.println("Milk added.");
-            } else {
-                System.out.println("No milk added.");
+                drink = new DrinkWithMilk(drink); // Применяем декоратор
+                System.out.println("Milk added");
             }
         }
 
         if (next != null) {
             return next.handle(drink, scanner);
         }
-        return true;
+        return drink; // Возвращаем модифицированный напиток
     }
 }
-
-
-
