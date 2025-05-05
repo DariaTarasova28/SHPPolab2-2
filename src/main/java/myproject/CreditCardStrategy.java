@@ -3,13 +3,14 @@ package myproject;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+
+@Component
+@Scope("singleton")
 public class CreditCardStrategy implements PaymentStrategy {
     private String cardNumber;
-
-    // Конструктор без параметров
-    public CreditCardStrategy() {
-        this.cardNumber = null; // Будет установлен в init()
-    }
 
     @Override
     public void init(Scanner scanner) {

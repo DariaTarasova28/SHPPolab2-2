@@ -1,92 +1,36 @@
 package myproject;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        List<Client> clients = new ArrayList<>();
-        DrinkMachine machine = new DrinkMachine();
-        ShoppingCart cart = new ShoppingCart();
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
-        Menu menu = Menu.getInstance();
-        menu.setScanner(scanner);
-        menu.setCart(cart);
+        Menu menu = context.getBean(Menu.class);
+        Scanner scanner = context.getBean(Scanner.class);
 
-        // Включаем логирование
-        LoggingMenu loggingMenu = new LoggingMenu(menu);
-
-        menu.setHandler(new Handler() {
-            private Handler next;
-
-            @Override
-            public Drink handle(Drink drink, Scanner scanner) {
-                // Пример обработки выбора напитка
-                System.out.println("Please select a drink (1 for black tea, 2 for coffee, 3 for green tea):");
-                String input = scanner.next();
-
-                try {
-                    int choice = Integer.parseInt(input);
-                    if (choice >= 0 && choice <= 3) {
-                        return drink;
-                    } else {
-                        System.out.println("Invalid choice, please try again.");
-                        return drink;
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a number between 0 and 3.");
-                    return drink;
-                }
-            }
-
-            @Override
-            public void setNext(Handler handler) {
-                this.next = handler;
-            }
-        });
-
-
-        menu.greet();
-
-        System.out.println("How many clients do you want to create?");
-        int numberOfClients = scanner.nextInt();
+        System.out.print("How many clients? ");
+        int clientCount = scanner.nextInt();
         scanner.nextLine();
-        for (int i = 0; i < numberOfClients; i++) {
-            System.out.println("\nCreating client #" + (i + 1) + "...");
-            Client client = new Client("Client-" + (i + 1));
-            clients.add(client);
 
-            ShoppingCart clientCart = new ShoppingCart();
-            menu.setCart(clientCart); //
+        for (int i = 0; i < clientCount; i++) {
+            // Создаем новую корзину для каждого клиента
+            ShoppingCart newCart = context.getBean(ShoppingCart.class);
+            menu.setCart(newCart); // Устанавливаем новую корзину в Menu
 
-            boolean continueChoosing = true;
-            while (continueChoosing) {
-                continueChoosing = loggingMenu.choose(client);
-            }
-
+            Client client = new Client("Client-" + (i+1));
+            menu.greet();
+            menu.selectDrinks(client);
             menu.printTotalCost();
 
-            try {
-                PaymentStrategyProxy ps = menu.choosePayment();
-                menu.pay(ps); // платим только за содержимое этой корзины
-            } catch (Exception e) {
-                System.out.println("Payment failed: " + e.getMessage());
-            }
-
-            System.out.println("\nClient #" + client.getClientId() + " order processed!");
+            PaymentStrategyProxy ps = menu.choosePayment();
+            newCart.pay(ps);
         }
-
-
-        System.out.println("\nProcessing all orders:");
-        while (DrinkMachine.getQueueSize() > 0) {
-            machine.serveNext();
-        }
-
-        System.out.println("\nAll orders processed.");
     }
 }
+
 
 
 

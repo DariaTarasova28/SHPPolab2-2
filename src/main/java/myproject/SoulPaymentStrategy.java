@@ -1,9 +1,12 @@
 package myproject;
-
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.Scanner;
 
+@Component
+@Scope("singleton")
 public class SoulPaymentStrategy implements PaymentStrategy {
     @Override
     public void init(Scanner scanner) {
@@ -29,3 +32,4 @@ public class SoulPaymentStrategy implements PaymentStrategy {
         System.out.println("Payment received. You no longer own your soul.");
     }
 }
+

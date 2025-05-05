@@ -1,8 +1,15 @@
 package myproject;
-// Фабрика для создания зеленого чая
+
+import org.springframework.stereotype.Component;
+
+@Component("greenTeaFactory")
+
 public class GreenTeaFactory implements DrinkFactory {
+
+
     @Override
     public Drink getDrink(String manufacturer) {
-        return new GreenTea(manufacturer, 1.5);
+        final double basePrice = 1.5;
+        return new GreenTea(manufacturer, basePrice);
     }
 }

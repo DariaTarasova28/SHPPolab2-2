@@ -1,15 +1,16 @@
 package myproject;
 
+import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+
 import java.util.Optional;
 import java.util.Scanner;
 
+@Component
+@Scope("singleton")
 public class DebitCardStrategy implements PaymentStrategy {
     private String cardNumber;
-
-    // Конструктор без параметров
-    public DebitCardStrategy() {
-        this.cardNumber = null; // Будет установлен в init()
-    }
 
     @Override
     public void init(Scanner scanner) {
