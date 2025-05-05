@@ -15,20 +15,6 @@ public class AppConfig {
     public Scanner scanner() {
         return new Scanner(System.in);
     }
-    @Bean
-    public BlackTeaFactory blackTeaFactory() {
-        return new BlackTeaFactory();
-    }
-
-    @Bean
-    public CoffeeFactory coffeeFactory() {
-        return new CoffeeFactory();
-    }
-
-    @Bean
-    public GreenTeaFactory greenTeaFactory() {
-        return new GreenTeaFactory();
-    }
 
     @Bean
     public Handler handlerChain() {
@@ -38,11 +24,6 @@ public class AppConfig {
         return sugarHandler;
     }
 
-    @Bean
-    @Scope("prototype") // Новый экземпляр для каждого внедрения
-    public ShoppingCart shoppingCart() {
-        return new ShoppingCart();
-    }
 
     @Bean
     public Menu menu(

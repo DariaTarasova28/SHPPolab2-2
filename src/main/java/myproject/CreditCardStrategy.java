@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Scope;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+
 
 @Component
 @Scope("singleton")

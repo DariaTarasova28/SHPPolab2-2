@@ -2,7 +2,7 @@ package myproject;
 
 import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Scope;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+
 
 import java.util.Optional;
 import java.util.Scanner;

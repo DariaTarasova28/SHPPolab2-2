@@ -6,5 +6,5 @@ public interface PaymentStrategy {
     void pay(double amount);
     String getPaymentDetails();
     Optional<String> canPay(double amount);
-    void init(Scanner scanner);  // Новый метод для инициализации
+    void init(Scanner scanner);
 }

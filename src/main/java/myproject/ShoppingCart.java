@@ -26,7 +26,7 @@ public class ShoppingCart {
         System.out.println("Using payment method: " + strategy.getPaymentDetails());
         System.out.println("Total cost with all additions: $" + total);
         strategy.pay(total);
-        drinks.clear(); // Очищаем корзину после оплаты
+        drinks.clear();
     }
 }
 
